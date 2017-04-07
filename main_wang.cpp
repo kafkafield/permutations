@@ -185,23 +185,24 @@ bool SJT_perm::next_mnum() {
 
 void Lex_perm::num_to_list() {
 	I16 used=0;
-	int iter = length - 1;
-	while (iter >= 0) {
+	I8 iter = length - 1;
+	while (iter) {
 		I8 should_count = 1;
 		I16 bias = number[iter] + 1;
 		I16 delta_bias;
 		I16 flag = ~0 << bias;
 		I16 mask = ~flag;
 		I16 slots = used & mask;
-		bias = BitCount(slots);
+		bias = __popcnt16(slots);
 		delta_bias = bias;
 		should_count += delta_bias;
 		while (delta_bias)
 		{
-			flag <<= delta_bias;
-			mask = ~flag;
+			I16 flag1 = flag << delta_bias;
+			mask = ~flag1;
+			flag = flag1;
 			slots = used & mask;
-			I16 bias_t = BitCount(slots);
+			I16 bias_t = __popcnt16(slots);
 			delta_bias = bias_t - bias;
 			bias = bias_t;
 			should_count += delta_bias;
@@ -217,23 +218,24 @@ void Lex_perm::num_to_list() {
 
 void Incre_perm::num_to_list() {
 	I16 used = 0;
-	int iter = length - 1;
-	while (iter >= 0) {
+	I8 iter = length - 1;
+	while (iter) {
 		I16 bias = number[iter] + 1;
 		I8 should_count = bias;
 		I16 delta_bias;
 		I16 flag = ~0 << bias;
 		I16 mask = ~flag;
 		I16 slots = used & mask;
-		bias = BitCount(slots);
+		bias = __popcnt16(slots);
 		delta_bias = bias;
 		should_count += delta_bias;
 		while (delta_bias)
 		{
-			flag <<= delta_bias;
-			mask = ~flag;
+			I16 flag1 = flag << delta_bias;
+			mask = ~flag1;
+			flag = flag1;
 			slots = used & mask;
-			I16 bias_t = BitCount(slots);
+			I16 bias_t = __popcnt16(slots);
 			delta_bias = bias_t - bias;
 			bias = bias_t;
 			should_count += delta_bias;
@@ -250,23 +252,24 @@ void Incre_perm::num_to_list() {
 
 void Decre_perm::num_to_list() {
 	I16 used = 0;
-	int iter = length - 1;
-	while (iter >= 0) {
+	I8 iter = length - 1;
+	while (iter) {
 		I16 bias = number[length-1-iter] + 1;
 		I8 should_count = bias;
 		I16 delta_bias;
 		I16 flag = ~0 << bias;
 		I16 mask = ~flag;
 		I16 slots = used & mask;
-		bias = BitCount(slots);
+		bias = __popcnt16(slots);
 		delta_bias = bias;
 		should_count += delta_bias;
 		while (delta_bias)
 		{
-			flag <<= delta_bias;
-			mask = ~flag;
+			I16 flag1 = flag << delta_bias;
+			mask = ~flag1;
+			flag = flag1;
 			slots = used & mask;
-			I16 bias_t = BitCount(slots);
+			I16 bias_t = __popcnt16(slots);
 			delta_bias = bias_t - bias;
 			bias = bias_t;
 			should_count += delta_bias;
@@ -283,8 +286,8 @@ void Decre_perm::num_to_list() {
 
 void SJT_perm::num_to_list() {
 	I16 used = 0;
-	int iter = length - 1;
-	while (iter >= 0) {
+	I8 iter = length - 1;
+	while (iter) {
 		I16 bias = number[length-1-iter] + 1;
 		bool dir = 0;
 		if (iter % 2) 
@@ -298,15 +301,16 @@ void SJT_perm::num_to_list() {
 			I16 flag = ~0 << bias;
 			I16 mask = ~flag;
 			I16 slots = used & mask;
-			bias = BitCount(slots);
+			bias = __popcnt16(slots);
 			delta_bias = bias;
 			should_count += delta_bias;
 			while (delta_bias)
 			{
-				flag <<= delta_bias;
-				mask = ~flag;
+				I16 flag1 = flag << delta_bias;
+				mask = ~flag1;
+				flag = flag1;
 				slots = used & mask;
-				I16 bias_t = BitCount(slots);
+				I16 bias_t = __popcnt16(slots);
 				delta_bias = bias_t - bias;
 				bias = bias_t;
 				should_count += delta_bias;
@@ -322,22 +326,23 @@ void SJT_perm::num_to_list() {
 			I16 flag = ~(~0 << (length-bias+1));
 			I16 mask = ~flag;
 			I16 slots = used & mask;
-			bias = BitCount(slots);
+			bias = __popcnt16(slots);
 			delta_bias = bias;
 			should_count += delta_bias;
 			while (delta_bias)
 			{
-				flag >>= delta_bias;
-				mask = ~flag;
+				I16 flag1 = flag << delta_bias;
+				mask = ~flag1;
+				flag = flag1;
 				slots = used & mask;
-				I16 bias_t = BitCount(slots);
+				I16 bias_t = __popcnt16(slots);
 				delta_bias = bias_t - bias;
 				bias = bias_t;
 				should_count += delta_bias;
 			}
-			int out_pos = should_count - 1;
+			I8 out_pos = should_count - 1;
 			out[out_pos] = '0'+iter+2;
-			used |= 1 << (length+1-should_count);
+			used |= 1 << (length-out_pos);
 		}
 		iter--;
 	}
@@ -414,5 +419,8 @@ int main(int argc, char ** argv)
 	sjt.generate_all();
 	end = get_time();
 	std::cout << "Takes " << end-start << "s" << std::endl;
+#ifdef _WIN32
+	system("pause");
+#endif
 	return 0;
 }
