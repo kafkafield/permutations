@@ -2,6 +2,8 @@
 #include <string.h>
 #include <string>
 #include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include "timer.hpp"
 
