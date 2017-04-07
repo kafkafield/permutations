@@ -78,9 +78,18 @@ inline I16 BitCount(I16 u)
      return ((uCount + (uCount >> 3)) & 030707070707) % 63;
 }
 
-__inline__ size_t bsf(size_t input) {
+inline size_t bsf(size_t input) {
 	size_t pos;
+#ifdef _WIN32
+	__asm 
+	{
+		mov ebx, input
+		bsf eax, ebx
+		mov pos, eax
+	};
+#elif __linux__
 	__asm__ ("bsf %1, %0" : "=r" (pos) : "rm" (input));
+#endif
 	return pos;
 }
 
@@ -173,7 +182,7 @@ bool SJT_perm::next_mnum() {
 }
 
 void Lex_perm::num_to_list() {
-	I16 used;
+	I16 used=0;
 	int iter = length - 1;
 	while (iter >= 0) {
 		I8 should_count = 1;
@@ -275,7 +284,7 @@ void SJT_perm::num_to_list() {
 	int iter = length - 1;
 	while (iter >= 0) {
 		I16 bias = number[length-1-iter] + 1;
-		bool dir;
+		bool dir = 0;
 		if (iter % 2) 
 			dir = number[length-iter] % 2;
 		else if (iter != 0)

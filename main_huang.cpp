@@ -117,7 +117,7 @@ int Lexico_permutation(int n)
     return 0;
 }
 
-int Ascend_permutation(int n)
+void Ascend_permutation(int n)
 {
     int *num=new int[n-1];
     int *cur=new int[n];
@@ -127,7 +127,7 @@ int Ascend_permutation(int n)
     }while(!Ascend_add1(num,n-1));
 }
 
-int Descend_permutation(int n)
+void Descend_permutation(int n)
 {
     int *num=new int[n-1];
     int *tmp=new int[n-1];
@@ -139,7 +139,7 @@ int Descend_permutation(int n)
     }while(!Descend_add1(num,n-1));
 }
 
-int SJT_permutation(int n)
+void SJT_permutation(int n)
 {
     int *cur=new int[n];
     int *dir=new int[n];
